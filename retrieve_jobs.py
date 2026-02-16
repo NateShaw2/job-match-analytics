@@ -1,7 +1,14 @@
 import os
 import requests
 import json
+import logging
 from dotenv import load_dotenv
+
+logging.basicConfig(
+	filename='jobs.log',
+	level=logging.WARNING,
+	format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
 class GetJobs:
 	def __init__(self, search_terms = [
@@ -40,6 +47,7 @@ class GetJobs:
 				print(json.dumps(data["results"][0], indent=2))
 			return data["results"]
 
+		logging.warning(f"No results found for search_terms: {search_terms}. For page: {page_number}.")
 		return []
 
 	def fetch_jobs(self, pages=2, results_per_page=50, verbose=True):
@@ -47,9 +55,13 @@ class GetJobs:
 			for page in range(1, pages + 1):
 				results = self._fetch(search_term, page, results_per_page=results_per_page)
 				for result in results:
-					resultID = result["id"]
-					if resultID not in self.jobs:
-						self.jobs[resultID] =  result
+					try:
+						resultID = result["id"]
+					except KeyError:
+						logging.error(f"No job id found for result: {json.dumps(result, indent=2)}")
+					else:
+						if resultID not in self.jobs:
+							self.jobs[resultID] =  result
 
 		if verbose:
 			print(json.dumps(self.jobs, indent=2))
