@@ -21,7 +21,7 @@ class GetJobs:
 		response = requests.get(baseUrl, headers=headers, params=params)
 		data = response.json()
 		try: 
-			data = data['data']
+			data = data["data"]
 		except KeyError:
 			logging.error(f"Could not find job applications for {data}")
 			return []
@@ -50,6 +50,8 @@ class GetJobs:
 				else:
 					if resultID not in self.jobs:
 						self.jobs[resultID] =  result
+					else:
+						logging.warning(f"Duplicate job ID found for job: {resultID}")
 
 		return self.jobs
 
