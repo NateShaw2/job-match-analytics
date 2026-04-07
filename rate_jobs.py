@@ -2,6 +2,7 @@ from google import genai
 from google.genai import types
 from dotenv import load_dotenv
 import os
+import json
 import typing_extensions as typing
 
 class JobRating(typing.TypedDict):
@@ -15,15 +16,26 @@ class RateJobs:
         load_dotenv()
         self.client = genai.Client(api_key=os.getenv("AI_API_KEY"))
 
-    def rate_job(self, job, resume_text, preferences):
-    response = client.models.generate_content(
-        model="gemini-2.5-flash", 
-        contents=f"Rate this job posting: {job}",
-        config=types.GenerateContentConfig(
-            system_instruction=f"Your resume: {resume_text}\nPreferences: {preferences}",
-            response_mime_type="application/json",
-            response_schema=JobRating
+    def rate_job(self, job, resume_text, preferences="N/A"):
+        response = self.client.models.generate_content(
+            model="gemini-2.5-flash", 
+            contents=f"Rate this job posting: {job}",
+            config=types.GenerateContentConfig(
+                system_instruction=f"Your resume: {resume_text}\nPreferences: {preferences}",
+                response_mime_type="application/json",
+                response_schema=JobRating
+            )
         )
-    )
 
-    return response.text
+        return response.text
+
+if __name__ == "__main__":
+    with open("test_data/resume_test.txt", "r", encoding="utf-8") as f:
+        resume = f.read()
+    with open("test_data/test_jobs.json", "r") as f:
+        jobs = json.load(f)
+
+    job = jobs["data"][0]
+
+    rater = RateJobs()
+    print(rater.rate_job(job, resume))
