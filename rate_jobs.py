@@ -16,7 +16,18 @@ class RateJobs:
         load_dotenv()
         self.client = genai.Client(api_key=os.getenv("AI_API_KEY"))
 
-    def rate_job(self, job, resume_text, preferences="N/A"):
+    def _clean_job(self, job:dict) -> str:
+        fields = ["job_title", "job_description", "job_is_remote", 
+        "job_posted_at", "job_location", "job_benefits", 
+        "job_employment_type", "job_salary_string"]
+
+        parts = []
+        for field in fields:
+            if value := job.get(field):
+                parts.append(f"{field.upper()}:\n{value}")
+        return "/n/n".join(parts)
+
+    def rate_job(self, job: dict, resume_text: str, preferences="N/A") -> JobRating:
         response = self.client.models.generate_content(
             model="gemini-2.5-flash", 
             contents=f"Rate this job posting: {job}",
