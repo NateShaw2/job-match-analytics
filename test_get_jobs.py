@@ -11,6 +11,7 @@ class TestFetchMethods:
 		jobs = GetJobs(search_terms=["data analyst"])
 		assert(len(jobs.fetch_jobs(pages=1, results_per_page=1)) == 1)	
 
+
 class TestErrorHandling:
 	def test_invalid_fetch_response(self):
 		with patch('requests.get') as mock_get:
