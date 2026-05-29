@@ -1,37 +1,54 @@
 import pytest
+import os
 from unittest.mock import patch, Mock
 from retrieve_jobs import GetJobs
 
-class TestFetchMethods:
-	def test_fetch(self):
-		jobs = GetJobs()
-		assert(len(jobs._fetch(search_terms="data analyst", page_number=1, results_per_page=1)) == 1)
+@pytest.fixture
+def params():
+	params = {}
+	params["baseUrl"] = "dummy_url"
+	params["headers"] = "dummy_headers"
+	params["params"] = "dummy_params"
 
-	def test_fetch_jobs(self):
-		jobs = GetJobs(search_terms=["data analyst"])
-		assert(len(jobs.fetch_jobs(pages=1, results_per_page=1)) == 1)	
+	return params
 
 
 class TestErrorHandling:
-	def test_invalid_fetch_response(self):
-		with patch('requests.get') as mock_get:
+	def test_invalid_fetch_response(self, params):
+		with patch("requests.get") as mock_get:
 			mock_response = Mock()
-			mock_response.json.return_value = {"results": []}
+			mock_response.json.return_value = {"data": []}
 			mock_response.status_code = 200
 			mock_get.return_value = mock_response
 
 			jobs = GetJobs()
-			assert(len(jobs._fetch("data analyst", page_number=1)) == 0)
+			assert(len(jobs._fetch(params["baseUrl"], params["headers"],
+				params["params"])) == 0)
 
-	def test_no_id(self):
-		with patch('requests.get') as mock_get:
+	def test_no_id(self, params):
+		with patch("requests.get") as mock_get:
 			mock_response = Mock()
 			mock_response.json.return_value = {
-				"results": [{"title": "Job without ID"}, 
-				{"id": 132, "title": "data analyst"}]
+				"data": [{"job_title": "Job without ID"}, 
+				{"job_id": 132, "job_title": "data analyst"}]
 			}
 
 			mock_get.return_value = mock_response
 
-			jobs = GetJobs(search_terms=["data analyst"])
-			assert(len(jobs.fetch_jobs(pages=1, results_per_page=1)) == 1)
+			jobs = GetJobs()
+			assert(len(jobs.fetch_jobs(params["baseUrl"], params["headers"],
+				[params["params"]])) == 1)
+
+	def test_duplicate_id(self, params):
+		with patch("requests.get") as mock_get:
+			mock_response = Mock()
+			mock_response.json.return_value = {
+				"data": [{"job_title": "Data Analyst", "job_id": 132},
+				{"job_title": "Data Analyst", "job_id": 132}]
+			}
+
+			mock_get.return_value = mock_response
+
+			jobs = GetJobs()
+			assert(len(jobs.fetch_jobs(params["baseUrl"], params["headers"],
+				[params["params"]])) == 1)

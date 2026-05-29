@@ -11,63 +11,70 @@ logging.basicConfig(
 )
 
 class GetJobs:
-	def __init__(self, search_terms = [
-	    "data analyst remote",
-	    "junior data analyst remote",
-	    "business analyst remote", 
-	    "business intelligence analyst remote",
-	    "junior business analyst remote",
-	    "reporting analyst remote"
-	]):
-		self.search_terms = search_terms
-		load_dotenv()
-		self.app_id = os.getenv("APP_ID")
-		self.application_key = os.getenv("APPLICATION_KEY")
-		self.baseUrl = os.getenv("BASE_URL")
+	def __init__(self):
 		self.jobs = {}
 
-	def _fetch(self, search_terms, page_number=2, results_per_page=50, verbose=False):
-		params = {
-			"app_id": self.app_id,
-			"app_key": self.application_key,
-			"results_per_page": results_per_page,
-			"what": search_terms
-		}
+	def _fetch(self, baseUrl, headers, params, verbose=False):
+		if verbose:
+			print(f"baseUrl: {baseUrl}\nParams: {params}")
 
-		response = requests.get(self.baseUrl + "/" + str(page_number), params=params)
+		response = requests.get(baseUrl, headers=headers, params=params)
 		data = response.json()
+		try: 
+			data = data["data"]["jobs"]
+		except KeyError:
+			logging.error(f"Could not find job applications for {data}")
+			return []
 
 		if verbose:
 			print(f"Status: {response.status_code}")
-			print(f"Results found: {data.get('count', 0)}")
+			print(f"Results found: {len(data)}")
 
-		if data.get("results"):
+		if data:
 			if verbose:
 				print("\nSample job:")
-				print(json.dumps(data["results"][0], indent=2))
-			return data["results"]
+				print(json.dumps(data[0], indent=2))
+			return data
 
-		logging.warning(f"No results found for search_terms: {search_terms}. For page: {page_number}.")
+		logging.warning(f"No results found for params: {params}")
 		return []
 
-	def fetch_jobs(self, pages=2, results_per_page=50, verbose=True):
-		for search_term in self.search_terms:
-			for page in range(1, pages + 1):
-				results = self._fetch(search_term, page, results_per_page=results_per_page)
-				for result in results:
-					try:
-						resultID = result["id"]
-					except KeyError:
-						logging.error(f"No job id found for result: {json.dumps(result, indent=2)}")
+	def fetch_jobs(self, baseUrl, headers, paramList, verbose=False):
+		for params in paramList:
+			results = self._fetch(baseUrl, headers, params, verbose)
+			for result in results:
+				try:
+					resultID = result["job_id"]
+				except KeyError:
+					logging.error(f"No job id found for result: {json.dumps(result, indent=2)}")
+				else:
+					if resultID not in self.jobs:
+						self.jobs[resultID] =  result
 					else:
-						if resultID not in self.jobs:
-							self.jobs[resultID] =  result
+						logging.warning(f"Duplicate job ID found for job: {resultID}")
 
-		if verbose:
-			print(json.dumps(self.jobs, indent=2))
 		return self.jobs
 
 
 if __name__ == "__main__":
 	jobs = GetJobs()
-	jobs.fetch_jobs(verbose=True)
+
+	load_dotenv()
+	host = os.getenv("RAPIDAPI_HOST")
+	key = os.getenv("RAPIDAPI_KEY")
+	baseUrl = os.getenv("BASE_URL")
+
+	headers = {
+		"x-rapidapi-key": key,
+		"x-rapidapi-host": host,
+		"Content-Type": "application/json"
+	}
+
+	paramList = [{
+		"query": "Data Analyst",
+		"num_pages": "1",
+		"country": "us",
+		"date_posted": "month"
+	}]
+
+	print(jobs.fetch_jobs(baseUrl, headers, paramList, verbose=True))
