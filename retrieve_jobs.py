@@ -21,7 +21,7 @@ class GetJobs:
 		response = requests.get(baseUrl, headers=headers, params=params)
 		data = response.json()
 		try: 
-			data = data["data"]
+			data = data["data"]["jobs"]
 		except KeyError:
 			logging.error(f"Could not find job applications for {data}")
 			return []
