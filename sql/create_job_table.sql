@@ -1,4 +1,4 @@
-CREATE TABLE Jobs (
+CREATE TABLE jobs (
 	job_id VARCHAR(255) PRIMARY KEY,
 	job_title VARCHAR(255),
 	employer_name VARCHAR(255),
