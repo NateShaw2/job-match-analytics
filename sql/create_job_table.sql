@@ -1,4 +1,4 @@
-CREATE TABLE Jobs (
+CREATE TABLE jobs (
 	job_id VARCHAR(255) PRIMARY KEY,
 	job_title VARCHAR(255),
 	employer_name VARCHAR(255),
@@ -22,5 +22,6 @@ CREATE TABLE Jobs (
 	job_skills_required VARCHAR(MAX) NOT NULL,
 	job_posting_quality_score TINYINT NOT NULL,
 	job_posting_quality_score_reasoning VARCHAR(MAX) NOT NULL,
-	job_query_search VARCHAR(255) NOT NULL
+	job_query_search VARCHAR(255) NOT NULL,
+	resume_id INT NOT NULL
 )
