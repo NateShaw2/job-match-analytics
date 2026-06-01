@@ -8,6 +8,7 @@ CREATE TABLE jobs (
 	job_description VARCHAR(MAX) NOT NULL,
 	job_posted_at VARCHAR(255),
 	job_posted_at_datetime_utc DATETIME,
+	job_rated_at DATETIME NOT NULL,
 	job_location VARCHAR(255),
 	job_city VARCHAR(255),
 	job_state VARCHAR(255),
