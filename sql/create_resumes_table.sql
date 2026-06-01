@@ -1,6 +1,7 @@
 CREATE TABLE resumes (
 	resume_id INT PRIMARY KEY,
 	resume_text VARCHAR(MAX),
+	resume_hash AS HASHBYTES('SHA_256', resume_text) PERSISTED,
 	date_inserted DATETIME
 );
 
