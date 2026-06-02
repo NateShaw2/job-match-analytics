@@ -1,7 +1,7 @@
 import pyodbc
 from dotenv import load_dotenv
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 
 load_dotenv()
 
@@ -23,7 +23,7 @@ def insert_resume(resume_text: str) -> int:
     conn.close()
     return row[0]
 
-def insert_job(job: dict, rating: dict, resume_id: int, query_search: str):
+def insert_job(job: dict, rating: dict, resume_id: int):
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -37,7 +37,7 @@ def insert_job(job: dict, rating: dict, resume_id: int, query_search: str):
         "job_description": job.get("job_description"),
         "job_posted_at": job.get("job_posted_at"),
         "job_posted_at_datetime_utc": job.get("job_posted_at_datetime_utc"),
-        "job_rated_at": datetime.utcnow(),
+        "job_rated_at_utc":  datetime.now(timezone.utc),
         "job_location": job.get("job_location"),
         "job_city": job.get("job_city"),
         "job_state": job.get("job_state"),
@@ -52,14 +52,16 @@ def insert_job(job: dict, rating: dict, resume_id: int, query_search: str):
         "job_skills_required": rating.get("skills_required"),
         "job_posting_quality_score": rating.get("posting_quality_score"),
         "job_posting_quality_score_reasoning": rating.get("posting_quality_score_reasoning"),
-        "job_query_search": query_search,
         "resume_id": resume_id,
-        "query_keywords": ",".join(query_search.split()),
-        "title_words": ",".join(job.get("job_title", "").split()),
+        "title": " ".join(job.get("job_title", "").split())
     }
 
     placeholders = ", ".join(["?"] * len(params))
     cursor.execute(f"{{CALL usp_insert_job({placeholders})}}", list(params.values()))
+
+    for query in job.get("queries", []):
+        cursor.execute("{CALL usp_insert_job_query(?, ?)}", job.get("job_id"), query)
+
     conn.commit()
     conn.close()
 
@@ -85,6 +87,7 @@ def main():
         "job_min_salary": 88037,
         "job_max_salary": 132055,
         "job_salary_period": "YEAR",
+        "queries": ["data analyst", "financial analyst"]
     }
 
     rating = {
@@ -95,12 +98,10 @@ def main():
         "posting_quality_score_reasoning": "Legitimate posting from a known healthcare organization with detailed requirements and salary range provided.",
     }
 
-    query_search = "junior data analyst"
-
     resume_id = insert_resume(resume_text)
     print(f"resume_id: {resume_id}")
 
-    insert_job(job, rating, resume_id, query_search)
+    insert_job(job, rating, resume_id)
     print("Job inserted successfully")
 
 if __name__ == "__main__":

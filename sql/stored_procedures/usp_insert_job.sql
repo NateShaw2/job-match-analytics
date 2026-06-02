@@ -2,7 +2,7 @@
 -- Create date: 6/1/2026
 -- Description:	Inserts job data to their respective tables
 -- =============================================
-CREATE PROCEDURE usp_insert_job
+CREATE OR ALTER PROCEDURE usp_insert_job
     @job_id VARCHAR(255),
     @job_title VARCHAR(255) = NULL,
     @employer_name VARCHAR(255) = NULL,
@@ -12,7 +12,7 @@ CREATE PROCEDURE usp_insert_job
     @job_description VARCHAR(MAX),
     @job_posted_at VARCHAR(255) = NULL,
     @job_posted_at_datetime_utc DATETIME = NULL,
-    @job_rated_at DATETIME,
+    @job_rated_at_utc DATETIME,
     @job_location VARCHAR(255) = NULL,
     @job_city VARCHAR(255) = NULL,
     @job_state VARCHAR(255) = NULL,
@@ -27,10 +27,8 @@ CREATE PROCEDURE usp_insert_job
     @job_skills_required VARCHAR(MAX),
     @job_posting_quality_score TINYINT,
     @job_posting_quality_score_reasoning VARCHAR(MAX),
-    @job_query_search VARCHAR(255),
     @resume_id INT,
-    @query_keywords VARCHAR(MAX),
-    @title_words VARCHAR(MAX)
+    @title VARCHAR(255)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -47,7 +45,7 @@ BEGIN
             job_description,
             job_posted_at,
             job_posted_at_datetime_utc,
-            job_rated_at,
+            job_rated_at_utc,
             job_location,
             job_city,
             job_state,
@@ -62,7 +60,6 @@ BEGIN
             job_skills_required,
             job_posting_quality_score,
             job_posting_quality_score_reasoning,
-            job_query_search,
             resume_id
         )
         VALUES (
@@ -75,7 +72,7 @@ BEGIN
             @job_description,
             @job_posted_at,
             @job_posted_at_datetime_utc,
-            @job_rated_at,
+            @job_rated_at_utc,
             @job_location,
             @job_city,
             @job_state,
@@ -90,17 +87,13 @@ BEGIN
             @job_skills_required,
             @job_posting_quality_score,
             @job_posting_quality_score_reasoning,
-            @job_query_search,
             @resume_id
         );
 
-        INSERT INTO job_query_keywords (job_id, job_query_keyword)
-        SELECT @job_id, TRIM(value)
-        FROM STRING_SPLIT(@query_keywords, ',');
-
         INSERT INTO job_title_words (job_id, job_title_word)
-        SELECT @job_id, TRIM(value)
-        FROM STRING_SPLIT(@title_words, ',');
+		VALUES (
+			@job_id, @title
+		);
     END
 END
 GO

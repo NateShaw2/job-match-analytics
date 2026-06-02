@@ -8,7 +8,7 @@ CREATE TABLE jobs (
 	job_description VARCHAR(MAX) NOT NULL,
 	job_posted_at VARCHAR(255),
 	job_posted_at_datetime_utc DATETIME,
-	job_rated_at DATETIME NOT NULL,
+	job_rated_at_utc DATETIME NOT NULL,
 	job_location VARCHAR(255),
 	job_city VARCHAR(255),
 	job_state VARCHAR(255),
@@ -23,6 +23,5 @@ CREATE TABLE jobs (
 	job_skills_required VARCHAR(MAX) NOT NULL,
 	job_posting_quality_score TINYINT NOT NULL,
 	job_posting_quality_score_reasoning VARCHAR(MAX) NOT NULL,
-	job_query_search VARCHAR(255) NOT NULL,
 	resume_id INT NOT NULL
 )
