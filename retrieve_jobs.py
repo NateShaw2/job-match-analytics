@@ -40,21 +40,22 @@ class GetJobs:
 		return []
 
 	def fetch_jobs(self, baseUrl, headers, paramList, verbose=False):
-		for params in paramList:
-			results = self._fetch(baseUrl, headers, params, verbose)
-			for result in results:
-				try:
-					resultID = result["job_id"]
-				except KeyError:
-					logging.error(f"No job id found for result: {json.dumps(result, indent=2)}")
-				else:
-					if resultID not in self.jobs:
-						self.jobs[resultID] =  result
-					else:
-						logging.warning(f"Duplicate job ID found for job: {resultID}")
-
-		return self.jobs
-
+	    for params in paramList:
+	        results = self._fetch(baseUrl, headers, params, verbose)
+	        query = params["query"]
+	        for result in results:
+	            try:
+	                result_id = result["job_id"]
+	            except KeyError:
+	                logging.error(f"No job id found for result: {json.dumps(result, indent=2)}")
+	            else:
+	                if result_id not in self.jobs:
+	                    self.jobs[result_id] = result
+	                    self.jobs[result_id]["queries"] = [query]
+	                else:
+	                    if query not in self.jobs[result_id]["queries"]:
+	                        self.jobs[result_id]["queries"].append(query)
+	    return self.jobs
 
 if __name__ == "__main__":
 	jobs = GetJobs()
