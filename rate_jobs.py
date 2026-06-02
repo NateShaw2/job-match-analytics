@@ -46,7 +46,7 @@ Red flags that lower the posting quality score:
 - No actual job requirements listed
 - Generic copy-paste descriptions"""
 
-    def _clean_job(self, job:dict) -> str:
+    def _clean_job(self, job: dict) -> str:
         fields = ["job_title", "job_description", "job_is_remote", 
         "job_posted_at", "job_location", "job_benefits", 
         "job_employment_type", "job_salary_string"]
