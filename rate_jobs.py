@@ -46,7 +46,7 @@ Red flags that lower the posting quality score:
 - No actual job requirements listed
 - Generic copy-paste descriptions"""
 
-    def _clean_job(self, job:dict) -> str:
+    def _clean_job(self, job: dict) -> str:
         fields = ["job_title", "job_description", "job_is_remote", 
         "job_posted_at", "job_location", "job_benefits", 
         "job_employment_type", "job_salary_string"]
@@ -58,8 +58,9 @@ Red flags that lower the posting quality score:
         return "/n/n".join(parts)
 
     def rate_job(self, job: dict, preferences: str = "N/A") -> JobRating:
+        model_name = "gemini-3.1-flash-lite"
         response = self.client.models.generate_content(
-            model="gemini-2.5-flash", 
+            model=model_name, 
             contents=f"Rate this job posting: {job}",
             config=types.GenerateContentConfig(
                 system_instruction=self.system_prompt,
@@ -68,7 +69,9 @@ Red flags that lower the posting quality score:
             )
         )
 
-        return json.loads(response.text)
+        result = json.loads(response.text)
+        result["rating_model_name"] = model_name
+        return result
 
 if __name__ == "__main__":
     with open("test_data/resume_test.txt", "r", encoding="utf-8") as f:
