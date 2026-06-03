@@ -27,6 +27,8 @@ CREATE OR ALTER PROCEDURE usp_insert_job
     @job_skills_required VARCHAR(MAX),
     @job_posting_quality_score TINYINT,
     @job_posting_quality_score_reasoning VARCHAR(MAX),
+	@job_apply_link VARCHAR(255) = NULL,
+	@job_rating_model_name VARCHAR(255),
     @resume_id INT,
     @title VARCHAR(255)
 AS
@@ -60,6 +62,8 @@ BEGIN
             job_skills_required,
             job_posting_quality_score,
             job_posting_quality_score_reasoning,
+			job_apply_link,
+			job_rating_model_name,
             resume_id
         )
         VALUES (
@@ -87,10 +91,12 @@ BEGIN
             @job_skills_required,
             @job_posting_quality_score,
             @job_posting_quality_score_reasoning,
+			@job_apply_link,
+			@job_rating_model_name,
             @resume_id
         );
 
-        INSERT INTO job_title_words (job_id, job_title_word)
+        INSERT INTO job_title (job_id, job_title)
 		VALUES (
 			@job_id, @title
 		);

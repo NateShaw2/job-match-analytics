@@ -52,6 +52,8 @@ def insert_job(job: dict, rating: dict, resume_id: int):
         "job_skills_required": ",".join(rating.get("skills_required") or []),
         "job_posting_quality_score": rating.get("posting_quality_score"),
         "job_posting_quality_score_reasoning": rating.get("posting_quality_score_reasoning"),
+        "job_apply_link": job.get("job_apply_link"),
+        "job_rating_model_name": rating.get("rating_model_name"),
         "resume_id": resume_id,
         "title": " ".join(job.get("job_title", "").split())
     }

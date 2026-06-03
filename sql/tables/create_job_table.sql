@@ -23,5 +23,7 @@ CREATE TABLE jobs (
 	job_skills_required VARCHAR(MAX) NOT NULL,
 	job_posting_quality_score TINYINT NOT NULL,
 	job_posting_quality_score_reasoning VARCHAR(MAX) NOT NULL,
+	job_apply_link VARCHAR(255),
+	job_rating_model_name VARCHAR(255) NOT NULL,
 	resume_id INT NOT NULL
 )

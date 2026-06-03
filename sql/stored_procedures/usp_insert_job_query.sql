@@ -8,6 +8,7 @@ CREATE OR ALTER PROCEDURE usp_insert_job_query
 AS
 BEGIN
     SET NOCOUNT ON;
+	IF NOT EXISTS (SELECT 1 FROM job_query WHERE job_id = @jobId AND job_query = @query)
     INSERT INTO job_query (job_id, job_query)
     VALUES (@jobId, @query)
 END

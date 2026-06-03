@@ -58,8 +58,9 @@ Red flags that lower the posting quality score:
         return "/n/n".join(parts)
 
     def rate_job(self, job: dict, preferences: str = "N/A") -> JobRating:
+        model_name = "gemini-3.1-flash-lite"
         response = self.client.models.generate_content(
-            model="gemini-2.5-flash", 
+            model=model_name, 
             contents=f"Rate this job posting: {job}",
             config=types.GenerateContentConfig(
                 system_instruction=self.system_prompt,
@@ -68,7 +69,9 @@ Red flags that lower the posting quality score:
             )
         )
 
-        return json.loads(response.text)
+        result = json.loads(response.text)
+        result["rating_model_name"] = model_name
+        return result
 
 if __name__ == "__main__":
     with open("test_data/resume_test.txt", "r", encoding="utf-8") as f:
