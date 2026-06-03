@@ -49,7 +49,7 @@ def insert_job(job: dict, rating: dict, resume_id: int):
         "job_salary_period": job.get("job_salary_period"),
         "job_score": rating.get("score"),
         "job_score_reasoning": rating.get("score_reasoning"),
-        "job_skills_required": rating.get("skills_required"),
+        "job_skills_required": ",".join(rating.get("skills_required") or []),
         "job_posting_quality_score": rating.get("posting_quality_score"),
         "job_posting_quality_score_reasoning": rating.get("posting_quality_score_reasoning"),
         "resume_id": resume_id,
