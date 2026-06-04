@@ -54,8 +54,7 @@ def insert_job(job: dict, rating: dict, resume_id: int):
         "job_posting_quality_score_reasoning": rating.get("posting_quality_score_reasoning"),
         "job_apply_link": job.get("job_apply_link"),
         "job_rating_model_name": rating.get("rating_model_name"),
-        "resume_id": resume_id,
-        "title": " ".join(job.get("job_title", "").split())
+        "resume_id": resume_id
     }
 
     placeholders = ", ".join(["?"] * len(params))
