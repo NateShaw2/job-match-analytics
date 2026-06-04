@@ -29,8 +29,7 @@ CREATE OR ALTER PROCEDURE usp_insert_job
     @job_posting_quality_score_reasoning VARCHAR(MAX),
 	@job_apply_link VARCHAR(255) = NULL,
 	@job_rating_model_name VARCHAR(255),
-    @resume_id INT,
-    @title VARCHAR(255)
+    @resume_id INT
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -96,10 +95,6 @@ BEGIN
             @resume_id
         );
 
-        INSERT INTO job_title (job_id, job_title)
-		VALUES (
-			@job_id, @title
-		);
     END
 END
 GO

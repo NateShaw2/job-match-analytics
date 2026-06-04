@@ -37,9 +37,9 @@ def main():
     }
 
     param_list = [
-        {"query": "Junior Data Analyst near Vancouver Washington", "num_pages": "1", "country": "us", "date_posted": "week"},
-        {"query": "Business Analyst near Vancouver Washington", "num_pages": "1", "country": "us", "date_posted": "week"},
-        {"query": "Reporting Analyst near Vancouver Washington", "num_pages": "1", "country": "us", "date_posted": "week"},
+        {"query": "Junior Data Analyst near Vancouver Washington", "num_pages": "1", "country": "us", "date_posted": "3days"},
+        {"query": "Business Analyst near Vancouver Washington", "num_pages": "1", "country": "us", "date_posted": "3days"},
+        {"query": "Reporting Analyst near Vancouver Washington", "num_pages": "1", "country": "us", "date_posted": "3days"},
     ]
 
     # Fetch jobs
