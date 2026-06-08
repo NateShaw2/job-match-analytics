@@ -42,6 +42,11 @@ def main():
         {"query": "Reporting Analyst near Vancouver Washington", "num_pages": "1", "country": "us", "date_posted": "3days"},
     ]
 
+    # Exclude job publishers whose job postings are mostly unhelpful.
+    publishers_to_exclude = ["Talent.com", "Learn4Good"]
+    for param in param_list:
+        param["exclude_job_publishers"] = publishers_to_exclude
+
     # Fetch jobs
     fetcher = GetJobs()
     jobs = fetcher.fetch_jobs(base_url, headers, param_list)
