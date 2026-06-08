@@ -1,6 +1,7 @@
 from google import genai
 from google.genai import types
 from dotenv import load_dotenv
+from pydantic import Field
 import os
 import json
 import typing_extensions as typing
@@ -63,7 +64,7 @@ Red flags that lower the posting quality score:
         model_name = "gemini-3.1-flash-lite"
         response = self.client.models.generate_content(
             model=model_name, 
-            contents=f"Rate this job posting: {self.clean_job(job)}",
+            contents=f"Rate this job posting: {self._clean_job(job)}",
             config=types.GenerateContentConfig(
                 system_instruction=self.system_prompt,
                 response_mime_type="application/json",
