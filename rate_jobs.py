@@ -1,10 +1,11 @@
 from google import genai
 from google.genai import types
 from dotenv import load_dotenv
-from pydantic import BaseModel, Field
+from pydantic import Field
 import os
 import json
 import typing_extensions as typing
+from resume_loader import load_profile
 
 class JobRating(typing.TypedDict):
     score: int = Field(ge=0, le=100)
@@ -17,13 +18,15 @@ class RateJobs:
     def __init__(self, resume_text: str, preferences: str = "N/A"):
         load_dotenv()
         self.client = genai.Client(api_key=os.getenv("AI_API_KEY"))
+        applicant_profile = load_profile()
         self.system_prompt = f"""You are a job-fit evaluator. Given a resume and optional preferences,
 rate how well the candidate matches the job posting.
 
+Applicant profile:
+{applicant_profile}
+
 Resume:
 {resume_text}
-
-Candidate preferences: {preferences}
 
 Score the job from 0 to 100 where:
 0 = completely unqualified, no relevant experience
@@ -55,13 +58,13 @@ Red flags that lower the posting quality score:
         for field in fields:
             if value := job.get(field):
                 parts.append(f"{field.upper()}:\n{value}")
-        return "/n/n".join(parts)
+        return "\n\n".join(parts)
 
     def rate_job(self, job: dict, preferences: str = "N/A") -> JobRating:
         model_name = "gemini-3.1-flash-lite"
         response = self.client.models.generate_content(
             model=model_name, 
-            contents=f"Rate this job posting: {job}",
+            contents=f"Rate this job posting: {self._clean_job(job)}",
             config=types.GenerateContentConfig(
                 system_instruction=self.system_prompt,
                 response_mime_type="application/json",
