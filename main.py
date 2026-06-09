@@ -43,7 +43,7 @@ def main():
     ]
 
     # Exclude job publishers whose job postings are mostly unhelpful.
-    publishers_to_exclude = ["Talent.com", "Learn4Good"]
+    publishers_to_exclude = "Talent.com, Learn4Good"
     for param in param_list:
         param["exclude_job_publishers"] = publishers_to_exclude
 
