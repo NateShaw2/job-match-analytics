@@ -78,7 +78,7 @@ Note: `jobs.sql` must be run before `resumes.sql` as `resumes.sql` contains an A
 
 Place your resume as a plain text file named `resume.txt` in the root directory.
 
-### 6. Configure Search Queries and Model
+### 6. Configure Search Queries, Model, and Applicant Profile
 
 The job search queries and AI model are hardcoded in `main.py`:
 
@@ -91,6 +91,8 @@ param_list = [
 ```
 
 Update these to match the roles you are targeting. The Gemini model is hardcoded in `rate_jobs.py` — update `model_name` there if you want to use a different model.
+
+You can also create a yaml file titled "applicant_profile.yaml" to supply additional information to the AI model such as how much experience you have.
 
 ## Running the Pipeline
 
